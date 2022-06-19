@@ -10,9 +10,10 @@ type Config struct {
 	isDebug       bool `env:"IS_DEBUG" env-default:"false"`
 	isDevelopment bool `env:"IS_DEV" env-default:"false"`
 	Listen        struct {
-		Type   string `env:"LISTEN_TYPE" env-default:"port"`
-		BindIp string `env:"BIND_IP" env-default:"0.0.0.0"`
-		Port   string `env:"PORT" env-default:"10000"`
+		Type       string `env:"LISTEN_TYPE" env-default:"port" env-description:"port of sock"`
+		BindIp     string `env:"BIND_IP" env-default:"0.0.0.0"`
+		Port       string `env:"PORT" env-default:"10000"`
+		SocketFile string `env:"SOCKET_FILE" env-default:"app.sock"`
 	}
 	AppConfig struct {
 		LogLevel  string
