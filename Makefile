@@ -22,3 +22,9 @@ migrate.down:
 
 migrate.up:
 	$(APP_BIN) migrate -seq up
+
+up:
+	docker compose up -d
+
+down:
+	docker compose down
