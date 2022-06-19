@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	_ "production_service/docs"
 	"production_service/internal/config"
 	"production_service/pkg/logging"
 	"production_service/pkg/metric"

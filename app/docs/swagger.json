@@ -3,5 +3,22 @@
     "info": {
         "contact": {}
     },
-    "paths": {}
+    "paths": {
+        "/api/heartbeat": {
+            "get": {
+                "tags": [
+                    "Metrics"
+                ],
+                "summary": "Heartbeat metric",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+    }
 }
