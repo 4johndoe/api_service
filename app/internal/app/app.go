@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"production_service/internal/config"
 	"production_service/pkg/logging"
+	"production_service/pkg/metric"
 	"time"
 )
 
@@ -29,6 +30,10 @@ func NewApp(cfg *config.Config, logger *logging.Logger) (App, error) {
 	router := httprouter.New()
 	router.Handler(http.MethodGet, "/swagger", http.RedirectHandler("/swagger/index.html", http.StatusMovedPermanently))
 	router.Handler(http.MethodGet, "/swagger/*any", httpSwagger.WrapHandler)
+
+	logger.Println("heartbeat metric init")
+	metricHandler := metric.Handler{}
+	metricHandler.Register(router)
 
 	return App{
 		cfg:    cfg,
@@ -46,7 +51,7 @@ func (a *App) startHTTP() {
 
 	var listener net.Listener
 
-	if a.cfg.Listen.Type == "sock" {
+	if a.cfg.Listen.Type == config.LISTEN_TYPE_SOCK {
 		appDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			a.logger.Fatal(err)
