@@ -2,7 +2,9 @@ package app
 
 import (
 	"log"
+	"production_service/internal/app"
 	"production_service/internal/config"
+	"production_service/pkg/logging"
 )
 
 func main() {
@@ -10,9 +12,10 @@ func main() {
 	cfg := config.GetConfig()
 
 	log.Print("logger initializing")
+	logger := logging.GetLogger()
 
-	app, err := app.NewApp(cfg)
+	a, err := app.NewApp(cfg, &logger)
 	if err != nil {
-
+		logger.Fatal(err)
 	}
 }
