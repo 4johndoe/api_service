@@ -12,8 +12,7 @@ func main() {
 	cfg := config.GetConfig()
 
 	log.Print("logger initializing")
-	logging.Init(cfg.AppConfig.LogLevel) // 40 49
-	logger := logging.GetLogger()
+	logger := logging.GetLogger(cfg.AppConfig.LogLevel) // 40 49
 
 	a, err := app.NewApp(cfg, &logger)
 	if err != nil {
