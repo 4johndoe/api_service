@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
+	"io/ioutil"
+	"log"
 	"path"
 	"runtime"
 )
@@ -42,15 +44,31 @@ func (l *Logger) GetLoggerWithField(k string, v interface{}) Logger {
 	return Logger{l.WithField(k, v)}
 }
 
-func Init() {
+func Init(level string) {
+	logrusLevel, err := logrus.ParseLevel(level)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	l := logrus.New()
 	l.SetReportCaller(true)
 	l.Formatter = &logrus.TextFormatter{
 		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
 			filename := path.Base(f.File)
-			return fmt.Sprintf("#{%s}:#{%s}", filename, f.Line), fmt.Sprintf("#{f.Function}()")
+			return fmt.Sprintf("%s:%d", filename, f.Line), fmt.Sprintf("%s", f.Function)
 		},
 		DisableColors: false,
 		FullTimestamp: true,
 	}
+
+	l.SetOutput(ioutil.Discard)
+
+	//l.AddHook(&writer.Hook{
+	//	Writer:    []io.Writer{os.Stdout},
+	//	LogLevels: logrus.AllLevels,
+	//})
+
+	l.SetLevel(logrusLevel)
+
+	e = logrus.NewEntry(l)
 }
