@@ -2,9 +2,10 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	"production_service/internal/domain/product/model"
+	"production_service/pkg/client/postgresql"
+	db "production_service/pkg/client/postgresql/model"
 	"production_service/pkg/logging"
 )
 
@@ -27,6 +28,14 @@ const (
 	table  = "product"
 )
 
+func (s *ProductStorage) queryLogger(sql, table string, args []interface{}) *logging.Logger {
+	return s.logger.ExtraFields(map[string]interface{}{
+		"sql":   sql,
+		"table": table,
+		"args":  args,
+	})
+}
+
 func (s *ProductStorage) All(ctx context.Context) ([]model.Product, error) {
 	query := s.queryBuilder.Select("id").
 		Column("name").
@@ -44,12 +53,37 @@ func (s *ProductStorage) All(ctx context.Context) ([]model.Product, error) {
 	// TODO filtering and sorting
 
 	sql, args, err := query.ToSql()
-
+	logger := s.queryLogger(sql, table, args)
 	if err != nil {
+		err := db.ErrCreateQuery(err)
+		logger.Error(err)
 		return nil, err
 	}
 
-	fmt.Println(sql, args) // log sql
+	logger.Trace("do query")
+	rows, err := s.client.Query(ctx, sql, args...)
+	if err != nil {
+		err = db.ErrDoQuery(err)
+		logger.Error(err)
+		return nil, err
+	}
 
-	return nil, nil
+	defer rows.Close()
+
+	list := make([]model.Product, 0)
+
+	for rows.Next() {
+		p := model.Product{}
+		if err := rows.Scan(
+			&p.ID, &p.Name, &p.Description, &p.ImageID, &p.Price, &p.CurrencyID, &p.CreatedAt, &p.UpdatedAt,
+		); err != nil {
+			err = db.ErrScan(postgresql.ParsePgError(err))
+			logger.Error(err)
+			return nil, err
+		}
+
+		list = append(list, p)
+	}
+
+	return list, nil
 }
