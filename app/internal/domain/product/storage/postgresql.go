@@ -43,9 +43,9 @@ func (s *ProductStorage) All(ctx context.Context) ([]model.Product, error) {
 		Column("image_id").
 		Column("price").
 		Column("currency_id").
-		Column("rating").
-		Column("category_id").
-		Column("specification").
+		//Column("rating").
+		//Column("category_id").
+		//Column("specification").
 		Column("created_at").
 		Column("updated_at").
 		From(schema + "." + table) //.ToSql()
