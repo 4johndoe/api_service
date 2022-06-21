@@ -14,6 +14,8 @@ import (
 	"path/filepath"
 	_ "production_service/docs"
 	"production_service/internal/config"
+	"production_service/internal/domain/product/storage"
+	"production_service/pkg/client/postgresql"
 	"production_service/pkg/logging"
 	"production_service/pkg/metric"
 	"time"
@@ -36,21 +38,21 @@ func NewApp(cfg *config.Config, logger *logging.Logger) (App, error) {
 	metricHandler := metric.Handler{}
 	metricHandler.Register(router)
 
-	//pgConfig := postgresql.NewPgConfig(
-	//	cfg.PostgreSQL.Username, cfg.PostgreSQL.Password,
-	//	cfg.PostgreSQL.Host, cfg.PostgreSQL.Port, cfg.PostgreSQL.Database,
-	//)
-	//pgClient, err := postgresql.NewClient(context.Background(), 5, time.Second*5, pgConfig)
-	//if err != nil {
-	//	logger.Fatal(err)
-	//}
-	//
-	//productStorage := storage.NewProductStorage(pgClient, logger)
-	//all, err := productStorage.All(context.Background())
-	//if err != nil {
-	//	logger.Fatal(err)
-	//}
-	//logger.Fatal(all)
+	pgConfig := postgresql.NewPgConfig(
+		cfg.PostgreSQL.Username, cfg.PostgreSQL.Password,
+		cfg.PostgreSQL.Host, cfg.PostgreSQL.Port, cfg.PostgreSQL.Database,
+	)
+	pgClient, err := postgresql.NewClient(context.Background(), 5, time.Second*5, pgConfig)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	productStorage := storage.NewProductStorage(pgClient, logger)
+	all, err := productStorage.All(context.Background())
+	if err != nil {
+		logger.Fatal(err)
+	}
+	logger.Fatal(all)
 
 	return App{
 		cfg:    cfg,
