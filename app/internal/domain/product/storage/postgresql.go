@@ -43,10 +43,10 @@ func (s *ProductStorage) All(ctx context.Context) ([]model.Product, error) {
 		Column("image_id").
 		Column("price").
 		Column("currency_id").
-		//Column("rating").
+		Column("rating").
 		//Column("category_id").
 		//Column("specification").
-		Column("created_at").
+		//Column("created_at").
 		Column("updated_at").
 		From(schema + "." + table) //.ToSql()
 
@@ -75,7 +75,7 @@ func (s *ProductStorage) All(ctx context.Context) ([]model.Product, error) {
 	for rows.Next() {
 		p := model.Product{}
 		if err := rows.Scan(
-			&p.ID, &p.Name, &p.Description, &p.ImageID, &p.Price, &p.CurrencyID, &p.CreatedAt, &p.UpdatedAt,
+			&p.ID, &p.Name, &p.Description, &p.ImageID, &p.Price, &p.CurrencyID, &p.Rating, &p.UpdatedAt,
 		); err != nil {
 			err = db.ErrScan(postgresql.ParsePgError(err))
 			logger.Error(err)

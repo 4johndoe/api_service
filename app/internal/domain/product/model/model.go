@@ -12,6 +12,6 @@ type Product struct {
 	Rating        int        `json:"rating"`
 	CategoryID    string     `json:"category_id"`
 	Specification string     `json:"specification"`
-	CreatedAt     *time.Time `json:"created_at"`
+	CreatedAt     time.Time  `json:"created_at"`
 	UpdatedAt     *time.Time `json:"updated_at"`
 }
